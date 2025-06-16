@@ -1,0 +1,31 @@
+Scenario
+A startup is deciding between SQL (PostgreSQL) and NoSQL (MongoDB) for their new e-commerce platform. They need a report comparing the two systems, focusing on structure, scalability, and use cases. You will analyze their product catalog requirements to recommend the best fit.
+
+ 
+Research Differences: Investigate key differences between SQL (relational) and NoSQL (non-relational) systems. Focus on aspects like schema rigidity, scalability, transaction support, and query language.
+SQL RDBMS works on rigid framework with predefined tables and columns within it where as NoSQL is flexible like Json files
+
+Analyze Requirements: The startup’s catalog includes products with fixed attributes (ID, name, price) and variable attributes (color, size, reviews). Determine which system handles this better.
+For fixed attributed RDBMS is better and so its query capacity. For variable attributes NoSQL performs better. 
+
+Pros and Cons: List 3 advantages and disadvantages of each system for the startup’s needs. For example, SQL ensures ACID compliance, while NoSQL offers flexible schema.
+Pros for RDBMS
+1. Secured
+2. ACID compliance
+3. Ease in retrieving large amount of data
+Cons for RDBMS
+1. Hierarchical and non flexible in nature
+2. Non distributed
+3. Not good for dynamically evolving data models
+
+Pros for NoSQL
+1. Flexible in nature
+2. distributed
+3. good for dynamically evolving data models
+Cons for noSQl
+1. non Secured
+2. ACID compliance is limited
+3. Less query capability
+
+Recommendation: Based on your analysis, recommend either SQL or NoSQL. Justify your choice with specific reasons (e.g., "SQL is better for transactional integrity").
+Best fit would be to go with RDBMS since this is a start up ecommerce, gaining trust is important. RDBMS will ensure proper governance and role based accesses and control end user transactions in a better way
