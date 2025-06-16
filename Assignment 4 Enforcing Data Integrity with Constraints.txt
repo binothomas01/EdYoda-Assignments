@@ -1,0 +1,24 @@
+create table patients
+(patient_id int primary key auto_increment, name Varchar(100) not null, birth_date date not null, 
+gender Varchar(5) check (gender = 'M'), check (gender = 'F'), check (gender = 'Other') , phone varchar (15) unique) ;
+
+create table visits
+(visit_id int primary key auto_increment, patient_id int,  FOREIGN KEY (patient_id) REFERENCES patients (patient_id) ,  
+visit_date DATE , diagnosis Varchar(1000)) ;
+
+-- Test Constraints: Attempt to insert invalid data (e.g., null name, duplicate phone) and verify constraints block it.
+ INSERT INTO patients (name, birth_date, gender, phone ) VALUES 
+('Bino Thomas', '1973-05-31' , 'Male', null) ; -- error code 3819 check contraisnt for gender 
+
+ INSERT INTO patients (name, birth_date, gender, phone ) VALUES 
+('Bino Thomas', '1973-05-31' , 'Male', 7259206309) ; -- error code unique contraisnt for ph number 
+
+ INSERT INTO patients (name, birth_date, gender, phone ) VALUES 
+(null, '1973-05-31' , 'Male', 7259206309) ; -- error code for null constraint
+
+ INSERT INTO visits (patient_id, visit_date, diagnosis ) VALUES 
+(4, '2025-05-31' , 'Neuroblastoma' ) ; -- error FK contraint
+
+
+
+select * from patients ;
