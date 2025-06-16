@@ -1,0 +1,32 @@
+Database Setup: Create an Employees table (employee_id, name, salary, department, hire_date) and a Departments table (department_id, name, location). Insert 10+ records with varied salaries and departments.
+
+Basic Queries:
+
+List employees earning more than $50,000, sorted by salary (DESC).
+select * from employees emp, salaries sal
+where emp.emp_id = sal.emp_id
+and salary > 50000
+order by salary desc ;
+
+Count employees per department using GROUP BY.
+select count(*) emp_cnt, dep.dept_name
+from employees emp, departments dep
+where emp.dept_id = dep.dept_id
+group by dep.dept_name ;
+
+Aggregate Functions:
+
+Calculate the average salary by department.
+select avg(sal.salary) avg_sal, dep.dept_name
+from employees emp, departments dep, salaries sal
+where emp.dept_id = dep.dept_id 
+and emp.emp_id = sal.emp_id
+group by dep.dept_name ;
+
+Find the highest and lowest salaries company-wide.
+select max(sal.salary) max_sal, Min(sal.salary) min_sal 
+from employees emp,   salaries sal
+where emp.emp_id = sal.emp_id ;
+
+Date Filtering: List employees hired in the last 5 years (use WHERE with date functions).
+select * from employees where hire_date <= current_date() - 5 ;
