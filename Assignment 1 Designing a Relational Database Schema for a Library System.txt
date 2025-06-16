@@ -1,0 +1,76 @@
+-- track books, authors, borrowers, and loans.
+-- create database library ;
+create database library ;
+use library ;
+create table books
+(book_id int primary key auto_increment, title Varchar(100) not null, isbn Varchar(50), 
+publication_year int, check (publication_year > 1900)) ; 
+
+INSERT INTO books (title,isbn,publication_year ) VALUES 
+('When breath becomes air', 'ACN123', 2002), 
+('Straight from the gut', 'ACN124', 1991), 
+('Be hungry be foolish', 'ACN125', 1997), 
+('into the wild', 'ACN126', 2007), 
+('Shoe dog', 'ACN127', 2003) ;
+
+select * from books ;
+
+create table authors
+(author_id int primary key auto_increment, name Varchar(100) not null,  
+birth_year int, check (birth_year > 1900)) ; 
+
+INSERT INTO authors (name, birth_year ) VALUES 
+('Paul Kalanidhi',  1979), 
+('Jack Wel', 1920), 
+('Steve Jobs', 1960), 
+('Chris McCandless', 1976), 
+('Phil Knight',  1954) ;
+
+Alter table authors add book_id int ;
+Alter table authors add FOREIGN KEY (book_id) REFERENCES books(book_id) ;
+
+select * from authors ;
+select * from books ;
+
+update authors set book_id = 3
+where author_id =  3;
+
+create table borrowers
+(borrower_id int primary key auto_increment, name Varchar(100) not null,  
+email varchar (100), check (email REGEXP  '@')) ; 
+
+INSERT INTO borrowers (name, email ) VALUES 
+('Bino Thomas',  'binothom@hotmail.com'), 
+('Jack Wel', null), 
+('Steve Jobs', null), 
+('Chris McCandless', null), 
+('Phil Knight',  'unknown@123' );
+
+create table loans
+(loan_id int primary key auto_increment, 
+book_id int,  FOREIGN KEY (book_id) REFERENCES books(book_id) ,  
+borrower_id int,  FOREIGN KEY (borrower_id) REFERENCES borrowers(borrower_id), 
+loan_date date, return_date date ) ; 
+
+INSERT INTO loans (book_id, borrower_id,loan_date , return_date ) VALUES 
+(1, 11, '2023-01-12', '2023-01-19' ), 
+(2, 14, '2023-01-12', '2023-01-19' ), 
+(3, 12, '2024-01-12', '2024-01-19' ), 
+(1, 13, '2023-01-12', '2023-01-19' ), 
+(5, 15, '2023-01-11', '2023-03-19' ), 
+(4, 14, '2024-01-12', '2024-01-19' ), 
+(3, 14, '2025-01-12', '2023-01-19' ), 
+(1,15, '2025-06-12', null ) ;
+
+select * from loans ;
+
+-- List all books published after 2000.
+select * from books where publication_year > 2000 ;
+-- Count the number of books by each author.
+select Count(*) count_books, ath.name auther_name, bk.title book_name from books bk, authors ath
+where bk.book_id = ath.book_id group by ath.name, bk.title ;
+-- Find borrowers who have overdue books (return_date < current date).
+select bw.name from borrowers bw, loans ln 
+where bw.borrower_id = ln.borrower_id and return_date < curdate() ;
+
+ 
