@@ -1,0 +1,31 @@
+select emp.first_name, emp.salary, dept.dept_name from employees emp, departments dept
+where emp.dept_id = dept.dept_id
+order by dept.dept_name, emp.first_name ;
+
+select count(emp.emp_id) , avg(emp.salary) , max(emp.salary) , sum(emp.salary), dep.dept_name
+from employees emp, departments dep 
+where emp.dept_id = dep.dept_id
+group by dep.dept_name ;
+
+select count(emp.emp_id) emp_cnt , 
+concat('$', avg(emp.salary)) avg_sal , 
+concat('$',max(emp.salary)) max_salary , 
+concat('$',sum(emp.salary)) tot_sal_bydept, dep.dept_name,
+concat('$',(select sum(salary) from employees)) as total_sal ,
+sum(emp.salary) / (select sum(salary) from employees)  * 100 per_diff
+from employees emp, departments dep 
+where emp.dept_id = dep.dept_id
+group by dep.dept_name ;
+
+
+select count(emp.emp_id) emp_cnt ,dep.dept_name, 
+concat('$', avg(emp.salary)) avg_sal  ,
+(select count(emp_id)/5 from employees) avg_cnt ,
+If ((select count(emp_id) from employees , departments 
+	 where employees.dept_id = departments.dept_id 
+     and departments.dept_id = dep.dept_id 
+     group by departments.dept_name) > 7 , 'Below', 'Above' ) stat ,
+sum(emp.salary) / (select sum(salary) from employees)  * 100 per_diff
+from employees emp, departments dep 
+where emp.dept_id = dep.dept_id
+group by dep.dept_name ;
