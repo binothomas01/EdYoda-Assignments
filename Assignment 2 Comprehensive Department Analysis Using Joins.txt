@@ -1,0 +1,29 @@
+-- INNER JOIN:
+select concat(emp.first_name, ' ' , emp.last_name) as emp_name, dep.dept_name 
+from employees emp, departments dep
+where emp.dept_id = dep.dept_id
+order by emp.first_name, dep.dept_name ;
+
+-- LEFT JOIN:
+select concat(emp.first_name, ' ' , emp.last_name) as emp_name, dep.dept_name 
+from employees emp left join departments dep
+on emp.dept_id = dep.dept_id
+order by emp.first_name, dep.dept_name ;
+
+-- Right JOIN:
+select concat(emp.first_name, ' ' , emp.last_name) as emp_name, dep.dept_name 
+from employees emp right join departments dep
+on emp.dept_id = dep.dept_id
+order by emp.first_name, dep.dept_name ;
+
+-- FULL JOIN:
+select emp.first_name,  dep.dept_name 
+from employees emp 
+FULL OUTER JOIN departments dep on emp.dept_id = dep.dept_id ;
+
+-- counts will vary based on the join condition
+-- inner join returned 23 rows since few emp dont have dep assigned
+-- left join returned 29 rows with 6 rows returning null dept
+-- right join returned 23 row since in the given dataset all the emp has department allocated 
+
+ 
