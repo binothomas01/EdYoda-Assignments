@@ -1,0 +1,44 @@
+desc employees ;
+# Field	Type	Null	Key	Default	Extra
+-- emp_id	int	NO	PRI		auto_increment
+-- first_name	varchar(50)	YES			
+-- last_name	varchar(50)	YES			
+-- gender	enum('M','F')	YES			
+-- hire_date	date	YES			
+-- dept_id	int	YES	MUL		
+-- salary	decimal(10,2)	YES			
+
+desc departments ;
+# Field	Type	Null	Key	Default	Extra
+-- dept_id	int	NO	PRI		auto_increment
+-- dept_name	varchar(100)	NO			
+-- loc	varchar(50)	YES	
+
+INSERT INTO employees (first_name,last_name,gender,hire_date,dept_id,salary) VALUES 
+('Tom','Mehrer','M','2015-06-01',1,42000.00) , 
+('Dick','Stanely','M','2015-06-01',1,34666.00) , 
+('Harry','Henson','M','2015-06-01',1,34777.00) , 
+('Andrew','Colleyer','M','2015-06-01',1,48000.00) , 
+('Richard','Wysocki','M','2015-06-01',1,42000.00) ;
+
+select * from employees ;
+
+update employees set salary = salary + salary * 7 /100 
+where emp_id in (29,30) ;
+
+update employees set dept_id = 2
+where emp_id = 28 ;
+
+delete from employees where emp_id = 27 ;
+
+update departments set loc = 'Bangalore' where dept_id in (1, 2,3,5) ;
+
+LOAD DATA INFILE 'C:\Bits\GitHub\EdYoda-Assignments\data.csv' 
+INTO TABLE employees 
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\r\n' ;
+
+
+
+ 
