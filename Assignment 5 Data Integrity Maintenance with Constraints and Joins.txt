@@ -1,0 +1,24 @@
+select * from employees where dept_id is null;
+select * from employees where dept_id not in (
+select dept_id from departments ) ;
+select * from employees where emp_id in
+(select emp_id from employees group by emp_id having count(emp_id) > 1 order by emp_id  ) 
+order by emp_id ;
+select * from employees 
+where salary > (select avg(salary) + 5000 from employees );
+
+Alter table employees add primary key (emp_id) ;
+Alter table employees add FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ;
+
+Alter table employees add constraint check (gender = 'M' or gender = 'F' or gender = 'Other') ;
+Alter table employees alter column gender set default 'Other' ;
+
+update employees set gender = 'Other' where gender is null ; 
+
+-- delete duplicates
+delete from employees where first_name in  
+( select emp1.first_name from employees emp1 group by emp1.first_name having count(emp1.first_name) > 1   )  ;
+
+
+
+
