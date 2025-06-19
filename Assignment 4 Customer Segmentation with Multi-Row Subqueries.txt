@@ -1,0 +1,12 @@
+select * from customer ;
+
+select customer_id, sum(order_amt) 
+from order_main 
+group by customer_id;
+
+select customer_id, sum(order_amt) ,
+       percentile_cont(0.95) within group (order by sum(order_amt) asc) over () AS position
+from order_main 
+group by customer_id;
+
+ 
