@@ -1,0 +1,27 @@
+select prod.category_name from category cat, products prod 
+where cat.cat_id = prod.cat_id ;
+
+select count(prod.prod_id) as cnt_prod, sum(prod.unit_price * prod.quantity) as sum_inv,
+       avg(prod.unit_price) unit_price
+from products prod, categogory cat
+where cat.cat_id = prod.cat_id
+group by cat.cat_id ; 
+
+select count(prod.prod_id) as cnt_prod, sum(prod.unit_price * prod.quantity) as sum_inv,
+       avg(prod.unit_price) unit_price
+from products prod, categogory cat
+where cat.cat_id = prod.cat_id 
+and prod.prod_id in 
+(select prod1.prod_id from products prod1 where prod.prod_id = prod1.prod_id)
+group by cat.cat_id
+
+select count(prod.prod_id) as cnt_prod, sum(prod.unit_price * prod.quantity) as sum_inv,
+       avg(prod.unit_price) unit_price
+from products prod, categogory cat
+where cat.cat_id = prod.cat_id 
+and prod.prod_id in 
+(select prod1.prod_id from products prod1 where prod.prod_id = prod1.prod_id
+ having max(prod1.quantity) > prod.quantity )
+group by cat.cat_id
+having count(prod.prod_id) > 5
+order by prod.quantity desc
