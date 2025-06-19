@@ -1,0 +1,25 @@
+use company_db ; 
+select count(*) emp_cnt, dep.dept_name
+from employees emp, departments dep
+where emp.dept_id = dep.dept_id
+group by dep.dept_name ;
+
+select avg(sal.salary) avg_sal, max(sal.salary) max_sal , sum(sal.salary) sum_sal, dep.dept_name
+from employees emp, departments dep, salaries sal
+where emp.dept_id = dep.dept_id 
+and emp.emp_id = sal.emp_id
+group by dep.dept_name ;
+
+select avg(sal.salary) avg_sal, max(sal.salary) max_sal , sum(sal.salary) sum_sal, dep.dept_id
+from employees emp, departments dep, salaries sal
+where emp.dept_id = dep.dept_id 
+and emp.emp_id = sal.emp_id
+group by dep.dept_id
+having avg(sal.salary) > 70000
+order by avg(sal.salary) desc ;
+
+
+ 
+select max(sal.salary) max_sal, Min(sal.salary) min_sal 
+from employees emp,   salaries sal
+where emp.emp_id = sal.emp_id ;
