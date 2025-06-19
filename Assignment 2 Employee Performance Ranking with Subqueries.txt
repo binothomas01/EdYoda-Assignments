@@ -1,0 +1,32 @@
+use company_db ; 
+
+alter table employees add sales_amount decimal (10,2) ;
+update employees set sales_amount = 380000 where emp_id = 18 ;
+
+select emp_id, first_name, last_name, sales_amount from employees ;
+
+select emp.dept_id, (select min(dept_name) from departments dep1 where dep1.dept_id = emp.dept_id) dept_name, 
+avg(emp.sales_amount) sales_amt
+from employees emp where emp.dept_id = 
+(select dep.dept_id from departments dep where dep.dept_id = emp.dept_id)
+group by emp.dept_id ;
+
+select emp.dept_id, (select min(dept_name) from departments dep1 where dep1.dept_id = emp.dept_id) dept_name, 
+avg(emp.sales_amount) sales_amt
+from employees emp 
+where emp.dept_id = 
+(select dep.dept_id from departments dep where dep.dept_id = emp.dept_id )
+group by emp.dept_id 
+having avg(emp.sales_amount) > (select avg(sales_amount) from employees emp1 );
+
+ select emp.emp_id, emp.first_name, emp.sales_amount sales_amt ,
+(select min(dept_name) from departments dep1 where dep1.dept_id = emp.dept_id) dept_name ,
+(select avg(sales_amount) from employees emp2 
+        where dep.dept_id = emp2.dept_id ) dept_avg
+from employees emp, departments dep
+where emp.dept_id = dep.dept_id 
+group by emp.emp_id , emp.first_name,  emp.sales_amount 
+having avg(emp.sales_amount) > (select avg(sales_amount) from employees emp1 )
+order by emp.sales_amount desc;
+
+select * from employees ;
