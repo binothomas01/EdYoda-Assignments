@@ -1,0 +1,26 @@
+ 
+create view sales_report_view as
+(select ord.order_id, cust.name cust_name, prod.name prod_name, prod.qty, (prod.qty * prod.price) as tolal_price from 
+orders ord, customers cust, products prod 
+where ord.cust_id = cust.cust_id 
+and prod.ord_id = ord_ord_id);
+
+Alter view sales_report_view as
+(select ord.order_id, cust.name cust_name, prod.name prod_name, prod.qty, (prod.qty * prod.price) as tolal_price from 
+orders ord, customers cust, products prod 
+where ord.cust_id = cust.cust_id 
+and prod.ord_id = ord_ord_id
+and year(ord.order_Date) = 2024);
+
+select * from sales_report_view where order_date between '2024-01-01' and '2025-01-01' ;
+
+ 
+create view regional_sales_view  as
+(select ord.order_id, cust.name cust_name, prod.name prod_name, prod.qty, (prod.qty * prod.price) as tolal_price from 
+orders ord, customers cust, products prod, usr_table usr
+where ord.cust_id = cust.cust_id 
+and prod.ord_id = ord_ord_id 
+and customer.region_id = usr.region_id
+and usr.user_name = <<logged in user>> );
+-- the above view if granted only required permission level can be viewed only certain setof users
+-- those users will be able to view data specific to their region
