@@ -1,0 +1,31 @@
+CREATE VIEW category_update
+AS
+SELECT inv.product_category, day(inv.inv_date) , sum(inv.total_units), sum(inv.revenue)
+FROM inventory inv
+WHERE store_id IN (SELECT st.store_id
+  FROM store st
+  where st.last_update > now() - 1)
+  group by inv.product_categor, day(inv.inv_date) ;
+  
+DELIMITER //
+CREATE PROCEDURE refresh_my_materialized_view()
+BEGIN
+    TRUNCATE TABLE category_update;
+    INSERT INTO category_update 
+    (SELECT inv.product_category, day(inv.inv_date) , sum(inv.total_units), sum(inv.revenue)
+FROM inventory inv
+WHERE store_id IN (SELECT st.store_id
+  FROM store st
+  where st.last_update > now() - 1)
+  group by inv.product_categor, day(inv.inv_date)) ;
+END //
+DELIMITER ;
+
+-- Create a scheduled event to run the stored procedure every day at midnight
+CREATE EVENT refresh_mv_event
+ON SCHEDULE EVERY 1 DAY
+STARTS CURRENT_TIMESTAMP
+DO
+  CALL refresh_my_materialized_view();
+  
+ 
