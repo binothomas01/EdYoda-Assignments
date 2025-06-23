@@ -1,0 +1,33 @@
+-- create database HMS ;
+create database HMS ;
+use HMS ;
+create table patients
+(patient_id int primary key auto_increment, name Varchar(100) not null,
+dob date not null, blood_type Varchar (10), check (blood_type REGEXP 'A' or 'A+' or 'B' or 'O' ),
+registration_date date default (current_date)) ; 
+
+-- to validate dob >= current date value
+DELIMITER //
+CREATE TRIGGER patients_b4insert
+BEFORE INSERT ON patients
+FOR EACH ROW
+BEGIN
+    IF NEW.dob <= CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'created_at must be > today';
+    END IF;
+END;
+//
+DELIMITER ;
+
+create table appointments
+(appointment_id int primary key auto_increment, 
+patient_id int, FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE, 
+descr Varchar(100) not null,
+appt_date date not null, appt_time time not null) ; 
+
+ALTER TABLE appointments ADD CONSTRAINT contr_1 UNIQUE (appointment_id, appt_date, appt_time) ;
+
+ALTER TABLE appointments ADD column appt_status varchar (10) default 'Scheduled';
+
+ALTER TABLE appointments ADD CONSTRAINT contr_2 unique (appointment_id, appt_date, appt_time) ;
