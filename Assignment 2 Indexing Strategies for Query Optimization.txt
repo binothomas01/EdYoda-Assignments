@@ -1,0 +1,24 @@
+select * from film_category where category_id = 6
+and film_id between 3 and 100
+order by last_update ;
+
+explain select * from film_category where category_id = 6
+and film_id between 3 and 100
+order by last_update ;
+
+create index idx_filmcat on film_category (film_id,category_id) ;
+
+explain select * from film_category where category_id = 6
+and film_id between 3 and 100
+order by last_update ;
+
+SELECT BENCHMARK(100000000, 'select * from film_category where category_id = 6
+and film_id between 3 and 100
+order by last_update') ;
+
+-- adding indices improved by 20 percent as seen from explain plan
+-- this improved performance is for DMLs using where clauses where those columns are used
+-- this will have a negative impact on insert or update statements since this means that
+-- DB engine has to rescope the index each time when you insert a row
+-- so same is not recommended if you do inserts more often
+ 
