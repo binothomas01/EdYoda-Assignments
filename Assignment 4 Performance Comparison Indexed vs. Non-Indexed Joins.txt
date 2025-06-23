@@ -1,0 +1,64 @@
+create table drivers
+(drivers_id int primary key auto_increment, name Varchar(100) not null,
+delivery_date date default (current_date)); 
+
+create table routes
+(routes_id int primary key auto_increment, name Varchar(100) not null,
+shipments_id int, foreign key (shipments_id) REFERENCES shipments(shipments_id), route_start varchar (100),
+poo varchar (100), pod varchar (100)); 
+
+create table shipments
+(shipments_id int primary key auto_increment, name Varchar(100) not null,
+driver_id int, foreign key (driver_id) REFERENCES drivers(drivers_id) , ship_date date default (current_date)); 
+
+insert into drivers (name) values
+('Bino')  ,
+('X')  ,
+('Y')  ,
+('Z')  ,
+('A')   ; 
+
+select * from drivers ;
+insert into shipments (name, driver_id) values
+('Bino', 1)  ,
+('X',2)  ,
+('Y',3)  ,
+('Z',4)  ,
+('A',5)  ,
+('Z1',4)  ,
+('Z2',4)  ,
+('Z3',4)  ;
+select * from shipments ;
+
+insert into routes (name, shipments_id, poo, pod) values
+('Bino', 4, 'Bangalore', 'Mysore')  ,
+('X', 2 ,  'Bangalore', 'Mysore')  ,
+('Y',3, 'Bangalore', 'Mysore')  ,
+('Z',4, 'Bangalore', 'Mysore')  ,
+('A',5, 'Bangalore', 'Mysore')  ,
+('Z1',4, 'Bangalore', 'Mysore')  ,
+('Z2',5 , 'Bangalore', 'Mysore')  ,
+('Z3',4, 'Bangalore', 'Mysore')  ;
+
+select * from routes ;
+
+select * from routes rt, shipments sh, drivers dr
+where rt.shipments_id = sh.shipments_id
+and sh.driver_id = dr.drivers_id ; 
+
+explain (select * from routes rt, shipments sh, drivers dr
+where rt.shipments_id = sh.shipments_id
+and sh.driver_id = dr.drivers_id ) ; 
+
+create index idx_drdt on drivers (drivers_id, delivery_date) ;
+
+explain (select * from routes rt, shipments sh, drivers dr
+where rt.shipments_id = sh.shipments_id
+and sh.driver_id = dr.drivers_id ) ; 
+
+-- after adding composite index with delivery date full scan whilst using select is minimized
+-- since there is already primary key defined for all the key tables, add another composite index only
+-- gave mariginal performance improvement since PK by itself will act as an index key
+
+
+ 
