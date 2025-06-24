@@ -1,0 +1,84 @@
+
+create table bonus_payments
+(payment_id int primary key auto_increment, 
+emp_id int, foreign key (emp_id) REFERENCES employees(emp_id), 
+amount decimal (10,3) , calc_date date, status char(1),
+Descr Varchar(100) not null ) ;
+-- the above table creates bonus payments to specific to employee department and and performance
+-- here payment id is the PK which is auto incremented for each insert
+-- emp id is the referenced key to employee table
+-- amount field is updated with bonus amount based on logic defined by the stored procedure
+-- status is one char field which represets C for calculated and P for Pending
+
+DELIMITER //
+CREATE PROCEDURE calculate_employee_bonus (
+    IN p_emp_id INT,
+    IN p_perf_rating INT,
+    IN p_dept_id INT
+)
+BEGIN
+    DECLARE d_bonus DECIMAL(10,3) DEFAULT 0;
+    DECLARE i_emp_id INT;
+    DECLARE i_dept_id INT;
+    DECLARE d_salary DECIMAL(10,3);
+    DECLARE i_cnt INT;
+    DECLARE done INT DEFAULT 0;
+    DECLARE cur CURSOR FOR
+    SELECT emp_id, dept_id, salary FROM employees;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = 1;
+    
+    SELECT COUNT(1) INTO i_cnt FROM employees WHERE emp_id = p_emp_id;
+    IF i_cnt <= 0 THEN
+        SIGNAL SQLSTATE '45000' ;
+          -- SET MESSAGE_TEXT = Concat('Employee id ', p_emp_id, ' is not valid');
+    END IF;
+    
+    SELECT COUNT(1) INTO i_cnt FROM employees WHERE dept_id = p_dept_id;
+    IF i_cnt <= 0 THEN
+        SIGNAL SQLSTATE '45000' ;
+          -- SET MESSAGE_TEXT = Concat('Department id ', p_dept_id, ' is not valid');
+    END IF;
+	 
+    IF p_perf_rating not in (1,2,3,4,5 ) THEN
+        SIGNAL SQLSTATE '45000' ;
+         --  SET MESSAGE_TEXT = Concat('Department id ', p_dept_id, ' is not valid');
+    END IF;
+
+    OPEN cur;
+
+    label: LOOP
+        FETCH cur INTO i_emp_id, i_dept_id, d_salary;
+        IF i_dept_id in (4) THEN
+          SET d_bonus = d_salary + (d_salary * 10/100) * p_perf_rating ;
+         ELSEIF i_dept_id in (3) THEN
+          SET d_bonus = d_salary + (d_salary * 8/100) * p_perf_rating ;
+		 ELSE
+		  SET d_bonus = d_salary + (d_salary * 5/100) * p_perf_rating ;	
+        END IF; 
+        IF d_bonus <= 0 OR d_bonus is null THEN
+          SIGNAL SQLSTATE '45000' ;
+		    -- SET MESSAGE_TEXT = 'Error: could not calculate bonus for the given employee';
+        END IF;      
+        IF done = 1 THEN
+            LEAVE label;
+        END IF;
+        
+        -- Insert payment record
+        INSERT INTO bonus_payments (
+            emp_id, amount, calc_date, status, descr
+        ) VALUES (
+            i_emp_id,
+            d_bonus,
+            NOW(),
+            'C',
+            CONCAT('Bonus calculated for emp ', i_emp_id, ' and dept ', i_dept_id)
+        ); 
+    END LOOP;
+
+    CLOSE cur;
+END //
+
+DELIMITER ;
+CALL calculate_employee_bonus (3,3,5);
+-- tested with multiple employee ids and departments with varying rating as above and is working as expected
+select * from bonus_payments ;
