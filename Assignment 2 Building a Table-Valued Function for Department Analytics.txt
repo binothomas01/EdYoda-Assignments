@@ -1,0 +1,38 @@
+use company_db ;
+select * from departments;
+select * from employees ;
+drop function get_department_stats ;
+delimiter //
+CREATE FUNCTION  get_department_stats (p_dept_id INT) RETURNS JSON  
+DETERMINISTIC
+READS SQL DATA
+BEGIN  
+    DECLARE emp_json JSON;
+    select JSON_OBJECT ('emp_cnt' , count(emp.emp_id) , 'avg_sal' , avg(emp.salary)  , 
+           'min_sal' , min(emp.salary) , 'max_sal' , max(emp.salary) , 
+           'total_budget' , Sum(dept.budget) )
+    into emp_json
+    from employees emp, departments dept
+	where emp.dept_id = dept.dept_id 
+    and dept.dept_id = p_dept_id
+	group by dept.dept_id; 
+    RETURN emp_json;
+ END //
+delimiter ; 
+
+create index idx_em_dept_id on employees (dept_id) ;
+
+explain (select count(emp.emp_id) emp_cnt, avg(emp.salary) avg_sal , min(emp.salary) min_sal, 
+	   max(emp.salary) max_sal, Sum(dept.budget) total_budget
+from employees emp, departments dept
+where emp.dept_id = dept.dept_id 
+group by dept.dept_id
+ ) ; 
+
+-- after adding index with dept id on employee table s, add another composite index only
+-- gave mariginal performance improvement since there was already a FK againt dept id in employee table
+
+
+ 
+
+ 
