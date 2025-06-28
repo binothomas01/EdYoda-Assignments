@@ -1,0 +1,46 @@
+select * from order_main ;
+
+select * from category ;
+select * from film_category ;
+select * from inventory ;
+select * from rental ;
+select * from payment;
+
+select pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date <= now()
+order by fm.description;
+
+explain (select pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and rent.staff_id = pay.staff_id 
+and pay.amount > 1 
+and (rent.return_date <= now() or rent.return_Date is null)
+order by fm.description) ;
+
+create index idx_filmcat on film_category (film_id,category_id) ;
+create index idx_staff_id on rental (staff_id) ;
+create index return_Date on rental (return_Date) ;
+
+-- adding indices on return_Date nad other key columns avoided full table scan and improved performance
+-- found that insert performance is impacted on rental table since we added two new indices for improving select performance
