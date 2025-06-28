@@ -1,0 +1,31 @@
+use company_db ;
+select * from departments;
+select * from employees ;
+
+create table salary_audit 
+( audit_id int primary key auto_increment,  emp_id int, foreign key (emp_id) references employees (emp_id) ,   
+ old_salary decimal (10,2), new_salary decimal (10,2), change_date date not null, 
+ changed_by_user Varchar (20) , action_type Char(1) , check (action_type = 'I' or action_type = 'D' or 
+ action_type = 'U' ));  
+
+drop trigger trg_record_salary_changes ;
+delimiter //
+CREATE TRIGGER trg_record_salary_changes 
+after update ON employees
+FOR EACH ROW
+BEGIN
+    IF OLD.salary <> NEW.salary THEN
+        INSERT INTO salary_audit (emp_id, old_salary, new_salary, change_date, changed_by_user, action_type)
+        VALUES (OLD.emp_id, OLD.salary, NEW.salary, current_date(), current_user(), 'U');
+    END IF;
+END; //
+delimiter ;
+
+update employees
+set salary = salary + 1000
+where emp_id = 1 ;
+
+update employees
+set salary = salary + .04 ;
+
+select * from salary_audit ;
