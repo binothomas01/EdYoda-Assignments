@@ -1,0 +1,44 @@
+use sakila ;
+select * from order_main ;
+DELIMITER //
+drop procedure Update_order ;
+CREATE PROCEDURE Update_order(
+    IN amount DECIMAL(10,2)
+)
+BEGIN
+    DECLARE insufficient_funds BOOLEAN DEFAULT FALSE;
+    START TRANSACTION;
+    -- Step 1: Deduct from order 3
+    UPDATE order_main
+    SET order_amt = order_amt - amount
+    WHERE order_id = 4;
+
+    -- Check if balance went negative
+    IF (SELECT order_amt FROM order_main WHERE order_id = 4) < 0 THEN
+        SET insufficient_funds = TRUE;
+    END IF;
+
+    -- Create a savepoint after deduction
+    SAVEPOINT after_deduction;
+
+    -- Step 2: Add to receiver
+    UPDATE order_main
+    SET order_amt = order_amt + amount
+    WHERE order_id = 5;
+
+    -- Simulate condition: rollback if insufficient funds
+    IF insufficient_funds THEN
+        ROLLBACK TO SAVEPOINT after_deduction;
+
+		UPDATE order_main
+        SET order_amt = order_amt + amount
+        WHERE order_id = 4;
+    END IF;
+ 
+    COMMIT;
+END//
+
+DELIMITER ;
+
+call Update_order (123000) ;
+select * from order_main ;
