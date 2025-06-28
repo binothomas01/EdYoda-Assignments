@@ -1,0 +1,36 @@
+use company_db ;
+select * from departments;
+select * from employees ;
+
+SELECT CONSTRAINT_NAME
+FROM information_schema.KEY_COLUMN_USAGE
+WHERE TABLE_NAME = 'employees' 
+  AND REFERENCED_TABLE_NAME IS NOT NULL;
+
+ALTER TABLE employees
+modify employees_ibfk_1
+FOREIGN KEY (emp_id) REFERENCES departments(emp_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+drop table equipment_assignment ;
+create table equipment_assignment  
+( equip_id int primary key auto_increment,  emp_id int, 
+ -- foreign key (emp_id) references employees (emp_id) on delete cascade,   
+ arch_reason varchar(100), archive_date date not null, 
+ archiv_by_user Varchar (20) , action_type Char(1) , check (action_type = 'I' or action_type = 'A'  ));  
+
+drop trigger handle_equipment_on_employee_exit  ;
+delimiter //
+CREATE TRIGGER handle_equipment_on_employee_exit  
+After delete ON employees
+FOR EACH ROW
+BEGIN
+        INSERT INTO equipment_assignment (emp_id, arch_reason, archive_date, archiv_by_user, action_type)
+        VALUES (OLD.emp_id, 'Moved out of the company', current_date(), current_user(), 'A');
+END; //
+delimiter ;
+
+delete from employees where emp_id = 31 ;
+
+select * from equipment_assignment ;
