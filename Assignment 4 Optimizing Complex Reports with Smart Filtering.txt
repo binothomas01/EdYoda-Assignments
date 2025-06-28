@@ -1,0 +1,53 @@
+select * from customer ;
+
+select cust.first_name, pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date <= now()
+and cust.first_name like 'M%'
+order by fm.description ;
+ 
+explain (
+select cust.first_name, pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date <= now()
+and cust.first_name like 'M%'
+order by fm.description ) ;
+ 
+select cust.first_name, pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date between '2005-01-01' and now()
+and cust.first_name like 'M%'
+order by fm.description ;
