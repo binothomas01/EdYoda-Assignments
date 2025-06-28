@@ -1,0 +1,74 @@
+select * from customer ;
+
+select cust.first_name, pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date <= now()
+and cust.first_name like 'M%'
+order by fm.description
+limit 20 offset 600;
+ 
+explain (
+select cust.first_name, pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date <= now()
+and cust.first_name like 'M%'
+order by fm.description
+limit 20 offset 600) ;
+
+DELIMITER //
+
+CREATE PROCEDURE edgecasehandle(
+    IN in_limit INT,
+    IN in_offset INT
+)
+BEGIN
+    DECLARE safe_limit INT DEFAULT 10;
+    DECLARE safe_offset INT DEFAULT 0;
+    SET safe_limit = IF(in_limit < 0, 10, in_limit);
+    SET safe_offset = IF(in_offset < 0, 0, in_offset);
+   
+  select cust.first_name, pay.amount, pay.payment_date, cat.name, fm.title, fm.description , rent.rental_date
+from payment pay, customer cust, rental rent, inventory inv, 
+film_category fcat, category cat, film fm
+where pay.customer_id = cust.customer_id
+and rent.rental_id = pay.rental_id
+and rent.customer_id = cust.customer_id
+and inv.inventory_id = rent.inventory_id
+and rent.customer_id = cust.customer_id
+and fcat.film_id = inv.film_id
+and fm.film_id = inv.film_id
+and cat.category_id = fcat.category_id
+and (rent.staff_id = pay.staff_id or rent.return_Date is null)
+and pay.amount > 1 
+and rent.return_date <= now()
+and cust.first_name like 'M%'
+order by fm.description
+LIMIT safe_limit OFFSET safe_offset;
+  
+END//
+
+DELIMITER ;
+
+call edgecasehandle (10,5) ;
