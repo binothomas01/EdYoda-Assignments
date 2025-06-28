@@ -1,0 +1,17 @@
+DELIMITER //
+CREATE FUNCTION validate_employee_email(p_email VARCHAR(255))
+RETURNS Varchar(100)
+DETERMINISTIC
+BEGIN
+	declare b_check boolean;
+    set b_check = p_email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$';
+    If Not b_check Then
+	Return 'Entered email id is not valid' ;
+    Else
+    Return '0' ;
+    End if; 
+ END;
+//
+
+DELIMITER ;
+
